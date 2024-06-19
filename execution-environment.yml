@@ -1,0 +1,5 @@
+# ansible/execution-environment.yml
+version: 1
+dependencies:
+  galaxy: collections/requirements.yml
+  python: pip-requirements.txt
