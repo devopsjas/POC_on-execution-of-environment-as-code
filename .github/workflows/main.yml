@@ -33,16 +33,29 @@ jobs:
 
     - name: List repository files
       run: ls -R
+      # Debugging: List all files in the repository to verify the presence of required files.
 
-    - name: Validate files
-      run: |
-        ansible-galaxy collection install -r collections/requirements.yml
-        ansible-builder validate -f execution-environment.yml
+    - name: Print contents of collections/requirements.yml
+      run: cat collections/requirements.yml
+      # Debugging: Print the contents of requirements.yml to verify formatting and content.
+
+    - name: Show Ansible version
+      run: ansible --version
+      # Debugging: Display Ansible version to ensure compatibility with collections specified.
+
+    - name: Install Ansible Galaxy dependencies
+      run: ansible-galaxy collection install -r collections/requirements.yml -vvv
+      # Debugging: Install Ansible Galaxy collections with verbose output for detailed debugging information.
+
+    - name: Validate execution environment file
+      run: ansible-builder validate -f execution-environment.yml
+      # Debugging: Validate the execution environment file to ensure correctness.
 
     - name: Build execution environment
       id: build_ee
       run: |
         ansible-builder build -t my-ee:latest -f execution-environment.yml
+      # Perform the build of the execution environment using ansible-builder.
 
     - name: Determine if EE should be pushed
       id: ee_changes
@@ -54,6 +67,7 @@ jobs:
           echo "No changes to EE"
           echo "::set-output name=ee_update_needed::false"
         fi
+      # Determine if there are changes to the EE that require pushing to the private hub.
 
     - name: Push execution environment to private automation hub
       if: steps.ee_changes.outputs.ee_update_needed == 'true'
@@ -61,14 +75,17 @@ jobs:
         docker login my-private-hub -u ${{ secrets.HUB_USERNAME }} -p ${{ secrets.HUB_PASSWORD }}
         docker tag my-ee:latest my-private-hub/my-ee:latest
         docker push my-private-hub/my-ee:latest
+      # Push the built execution environment to the private automation hub if needed.
 
     - name: Configure EE in Ansible Automation Platform
       if: steps.ee_changes.outputs.ee_update_needed == 'true'
       run: |
         ansible-runner create EE my-ee --hub my-private-hub/my-ee:latest
         ansible-runner configure EE my-ee
+      # Configure the execution environment in the Ansible Automation Platform.
 
     - name: Continue with existing steps
       run: |
         echo "Proceeding with the rest of the CI/CD pipeline..."
         # Add any additional steps here.
+      # Continue with any remaining steps in the CI/CD pipeline.
