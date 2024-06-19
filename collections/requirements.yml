@@ -1,0 +1,4 @@
+# ansible/collections/requirements.yml
+---
+collections:
+  - name: ansible.builtin
