@@ -24,28 +24,28 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('POC_on-execution-of-environment-as-code/pip-requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('/pip-requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
 
     - name: Install Python dependencies
       run: |
-        if [ -f POC_on-execution-of-environment-as-code/pip-requirements.txt ]; then pip install -r POC_on-execution-of-environment-as-code/pip-requirements.txt; fi
+        if [ -f /pip-requirements.txt ]; then pip install -r /pip-requirements.txt; fi
 
     - name: Validate files
       run: |
-        ansible-galaxy collection install -r POC_on-execution-of-environment-as-code/collections/requirements.yml
-        ansible-builder validate -f POC_on-execution-of-environment-as-code/execution-environment.yml
+        ansible-galaxy collection install -r /collections/requirements.yml
+        ansible-builder validate -f /execution-environment.yml
 
     - name: Build execution environment
       id: build_ee
       run: |
-        ansible-builder build -t my-ee:latest -f POC_on-execution-of-environment-as-code/execution-environment.yml
+        ansible-builder build -t my-ee:latest -f /execution-environment.yml
 
     - name: Determine if EE should be pushed
       id: ee_changes
       run: |
-        if git diff --name-only HEAD~1 HEAD | grep -E "POC_on-execution-of-environment-as-code/pip-requirements.txt|POC_on-execution-of-environment-as-code/collections/requirements.yml|POC_on-execution-of-environment-as-code/execution-environment.yml"; then
+        if git diff --name-only HEAD~1 HEAD | grep -E "/pip-requirements.txt|/collections/requirements.yml|/execution-environment.yml"; then
           echo "EE needs update"
           echo "::set-output name=ee_update_needed::true"
         else
