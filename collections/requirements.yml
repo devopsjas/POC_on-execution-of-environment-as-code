@@ -2,4 +2,4 @@
 ---
 collections:
   - name: ansible.builtin
-    version: '*'
+    version: 2.15.4
