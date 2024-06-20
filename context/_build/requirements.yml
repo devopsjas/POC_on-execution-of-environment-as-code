@@ -1,0 +1,9 @@
+# ansible/collections/requirements.yml
+---
+collections:
+  - name: community.general
+    version: "3.4.0"
+  # - name: ansible.builtin
+    # version: '*'
+    # version: 4.9.1
+    # version: 2.17.1

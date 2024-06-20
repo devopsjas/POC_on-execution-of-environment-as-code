@@ -1,0 +1,3 @@
+# ansible/pip-requirements.txt
+ansible
+ansible-builder
